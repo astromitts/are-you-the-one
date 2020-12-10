@@ -1,0 +1,125 @@
+{% extends 'ayto/base.html' %}
+
+{% block page_content %}
+	<div class="row">
+		<div class="col">
+			<h3>Week #{{week.week_number}}</h3>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<h4>Matches</h4>
+			<table class="table">
+				<tr>
+					<th>Participant 1</th>
+					<th>Participant 2</th>
+					<th></th>
+				</tr>
+				{% for match in week.matchup_set.all %}
+						<tr>
+							<td>{{match.matchup.participant1.name}}</td>
+							<td>{{match.matchup.participant2.name}}</td>
+							<td>
+								<form method="POST">
+								{% csrf_token %}
+									<input type="hidden" name="undo_match_pk" id="id_undo_match_pk" value="{{match.pk}}">
+									<input name="undo-match" id="id_undo-match" type="submit" class="btn btn-warning" value="undo"/>
+								</form>
+							</td>
+						</tr>
+				{% endfor %}
+				{% if available_participants %}
+					<form method="POST" action="">
+						{% csrf_token %}
+						<tr>
+							<td>
+								<select name="participant1" id="id_participant1" class="form-control">
+									{% for participant in available_participants %}
+										<option value="{{participant.pk}}">{{participant.name}}</option>
+									{% endfor %}
+								</select>
+							</td>
+							<td>
+								<select name="participant2" id="id_participant2" class="form-control">
+									{% for participant in available_participants %}
+										<option value="{{participant.pk}}">{{participant.name}}</option>
+									{% endfor %}
+								</select>
+							</td>
+							<td>
+								<input class="form-control btn btn-primary" type="submit" name="lock-match" id="lock-match" value="Lock" />
+							</td>
+						</tr>
+					</form>
+				{% endif %}
+			</table>
+			<table class="table">
+				<form method="POST" action="">
+					{% csrf_token %}
+					<tr>
+						<th><label for="id_num_matches">Number of matches:</label></th>
+						<td><input type="text" name="num_matches" id="id_num_matches" class="form-control" /></td>
+						<td><input class="form-control btn btn-primary" type="submit" name="lock-num-matches" id="lock-num-matches" value="Lock" /></td>
+					</tr>
+				</form>
+			</table>
+		</div>
+		<div class="col">
+			<h4>Truth Booth</h4>
+			<table class="table">
+				<tr>
+					<th>Participant 1</th>
+					<th>Participant 2</th>
+					<th colspan="2">Perfect Match</th>
+				</tr>
+				{% for tb in week.truthbooth_set.all %}
+					<tr>
+						<td>{{tb.matchup.participant1.name}}</td>
+						<td>{{tb.matchup.participant2.name}}</td>
+						<td>{{tb.match}}</td>
+						<td>
+							<form method="POST">
+							{% csrf_token %}
+								<input type="hidden" name="undo_truthbooth_pk" id="id_undo_truthbooth_pk" value="{{tb.pk}}">
+								<input name="undo-truthbooth" id="id_undo-truthbooth" type="submit" class="btn btn-warning" value="undo"/>
+							</form>
+						</td>
+					</tr>
+				{% endfor %}
+				{% if available_participants %}
+					<form method="POST" action="">
+						{% csrf_token %}
+						<tr>
+							<td>
+								<select name="participant1" id="id_participant1" class="form-control">
+									{% for participant in available_participants %}
+										<option value="{{participant.pk}}">{{participant.name}}</option>
+									{% endfor %}
+								</select>
+							</td>
+							<td>
+								<select name="participant2" id="id_participant2" class="form-control">
+									{% for participant in available_participants %}
+										<option value="{{participant.pk}}">{{participant.name}}</option>
+									{% endfor %}
+								</select>
+							</td>
+							<td>
+								<input class="form-control" type="checkbox" name="perfect_match" id="id_perfect_match" value="Y" />
+							</td>
+							<td>
+								<input class="form-control btn btn-primary" type="submit" name="lock-truthbooth" id="lock-truthbooth" value="Lock" />
+							</td>
+						</tr>
+					</form>
+				{% endif %}
+			</table>
+			{% if week.matches_count %}
+				<h1>{{week.matches_count}} MATCH{% if week.matches_count > 1 %}ES{% endif %}</h1>
+			{% else %}
+				<h1>0 MATCHES</h1>
+			{% endif %}
+		</div>
+	</div>
+
+{% endblock %}

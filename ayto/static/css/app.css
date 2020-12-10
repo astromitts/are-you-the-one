@@ -1,0 +1,31 @@
+.profile_img {
+  width: 300px;
+}
+
+.wrapper {
+  width: 200px;
+  float: left;
+}
+
+.eliminated {
+  color: #CCCCCC !important;
+}
+.eliminated a {
+  color: #CCCCCC !important;
+}
+
+.perfect-match {
+  color: #4FD894 !important;
+}
+.perfect-match a {
+  color: #4FD894 !important;
+}
+
+.mismatch {
+  color: #FF9800 !important;
+}
+.mismatch a {
+  color: #FF9800 !important;
+}
+
+/*# sourceMappingURL=app.css.map */

@@ -1,0 +1,56 @@
+{% extends 'ayto/base.html' %}
+{% load apptags %}
+
+{% block page_content %}
+	<div class="row">
+		<div class="col"><h3>Match Ups</h3></div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<table class="table table-bordered">
+				<tr><td></td>
+				{% for week in weeks %}
+					<td>
+						{{week.week_number}}&nbsp;({{week.matches_count}})
+					</td>
+				{% endfor %}
+				</tr>
+				{% for week in weeks %}
+					<tr>
+						<td>
+							{{week.week_number}}&nbsp;({{week.matches_count}})
+							{% for tb in week.truthbooth_set.all %}
+								<br />
+								{{tb.matchup.participant1}} +<br />{{tb.matchup.participant2}}<br />= {{tb.match}}
+							{% endfor %}
+						</td>
+						{% for week_h in weeks %}
+						<td>
+							{% if week != week_h %}
+								{% with week|get_overlaps:week_h as overlaps %}
+									{% for overlap in overlaps %}									
+									<div class="{% if overlap.matchup.eliminated %}eliminated{% elif overlap.matchup.perfect_match %}perfect-match{% endif %}">
+										<a href="{% url 'pm_detail' pm_pk=overlap.matchup.pk %}">{{overlap.matchup.participant1.name}} + {{overlap.matchup.participant2.name}}
+										</a>
+									</div>
+									{% endfor %}
+								{% endwith %}
+
+								{% with week|get_mismatches:week_h as mismatches %}
+									{% for mismatch in mismatches %}									
+									<div class="{% if mismatch.matchup.eliminated %}eliminated{% elif mismatch.matchup.perfect_match %}perfect-match{% else %}mismatch{% endif %}">
+										<a href="{% url 'pm_detail' pm_pk=mismatch.matchup.pk %}">{{mismatch.matchup.participant1.name}} + {{mismatch.matchup.participant2.name}}
+										</a>
+									</div>
+									{% endfor %}
+								{% endwith %}
+							{% endif %}
+						</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+{% endblock %}

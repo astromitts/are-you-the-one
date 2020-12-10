@@ -1,0 +1,83 @@
+{% extends 'ayto/base.html' %}
+{% load apptags %}
+
+{% block page_content %}
+	{% if participant.perfect_match %}
+		<div class="row ">
+			<div class="col">
+				<div class="alert alert-success">
+					<strong>PERFECT MATCH: </strong>{{participant.perfect_match}}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	<div class="row">
+		<div class="col-4">
+			<h1>{{participant.full_name}}</h1>
+			<img class="profile_img" src="{{participant.picture}}" />
+		</div>
+		<div class="col">
+			<h3>Eliminations</h3>
+			<table class="table">
+				<tr>
+					<th>Match</th>
+					<th>Reason</th>
+				</tr>
+			{% for matchup in participant.eliminated_matchups %}
+				<tr>
+					<td>{{matchup.match.name}}</td>
+					<td>{{matchup.elimination_type}}</td>
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<h3>Potential Matchups</h3>
+			{{particpant.potential_matchups}}
+			<table class="table">
+				<tr>
+					<th>Match</th>
+					<th>Status</th>
+					<th>Matched Weeks</th>
+				</tr>
+			{% for matchup in participant.potential_matchups %}
+				<tr>
+					<td><a href="{% url 'participant_index' participant_pk=matchup.match.pk %}">{{matchup.match.name}}</a></td>
+					<td>{{matchup.elimination_type}}</td>
+					<td>
+						{% for matched_week in matchup.weeks_matched %}
+							<strong>Week #{{matched_week.week.week_number}} ({{matched_week.week.matches_count}} total matches)</strong><br />
+							{% with matched_week.week.get_overlaps|overlaps_for_participant:participant as weekly_overlaps %}
+								{% if weekly_overlaps %}
+									<strong>overlaps</strong>
+									<table>
+									{% for overlap_week, overlaps in weekly_overlaps.items %}
+										<tr>
+										{% for overlap in overlaps %}
+											{% if forloop.first %}
+												<td>Week #{{overlap_week.week_number}} </td>
+											{% else %}
+												<td></td>
+											{% endif %}
+											<td>
+												<a href="{% url 'pm_detail' pm_pk=overlap.pk %}">
+													{{overlap.participant1}} + {{overlap.participant2}}
+												</a>
+											</td>
+										</tr>
+										{% endfor %}
+									{% endfor %}
+									</table>
+								{% endif %}
+							{% endwith %}
+							{% if not forloop.last %}<br />{% endif %}
+						{% endfor %}
+					</td>
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+	</div>
+{% endblock %}

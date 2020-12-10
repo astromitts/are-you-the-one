@@ -1,0 +1,74 @@
+{% extends 'ayto/base.html' %}
+{% block page_content %}
+	<div class="row">
+		<div class="col">
+				{% if pm.perfect_match %}
+					<div class="alert alert-success">
+				{% elif pm.eliminated %}
+					<div class="alert alert-warning">
+				{% else %}
+					<div class="alert alert-light">
+				{% endif %}
+						<h2>Status: {{pm.elimination_type}}</h2>
+				</div>
+		</div>
+	</div>
+	</div>
+	<div class="row">
+		<div class="col-4">
+			<h2>{{pm.participant1}}</h2>
+			<img class="profile_img" src="{{pm.participant1.picture}}" />
+		</div>
+		<div class="col-2">
+			<form method="POST">
+				{% csrf_token %}
+				{% if pm.perfect_match %}
+					<input type="submit" class="btn btn-danger" name="unset-perfect-match" id="id_unset-perfect-match" value="Unset" />
+				{% else %}
+					<input type="submit" class="btn btn-success" name="set-perfect-match" id="id_set-perfect-match" value="Perfect match!" />
+				{% endif %}
+			</form>
+
+		</div>
+		<div class="col">
+			<h2>{{pm.participant2}}</h2>
+			<img class="profile_img" src="{{pm.participant2.picture}}" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<h4>Match ups</h4>
+			<table class="table">
+				{% for matchup in pm.matchup_set.all %}
+				<tr>
+					<th>Week #{{matchup.week.week_number}}</th>
+					<td>total matches: {{matchup.week.matches_count}}</td>
+					<td>
+						{% if matchup.week.get_overlaps %}
+							<strong>overlaps</strong>
+							<table>
+							{% for overlap_week, overlaps in matchup.week.get_overlaps.items %}
+								<tr>
+								{% for overlap in overlaps %}
+									{% if forloop.first %}
+										<td>Week #{{overlap_week.week_number}} </td>
+									{% else %}
+										<td></td>
+									{% endif %}
+									<td>
+										<a href="{% url 'pm_detail' pm_pk=overlap.pk %}">
+											{{overlap.participant1}} + {{overlap.participant2}}
+										</a>
+									</td>
+								</tr>
+								{% endfor %}
+							{% endfor %}
+							</table>
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+{% endblock %}
