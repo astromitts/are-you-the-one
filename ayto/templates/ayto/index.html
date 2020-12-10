@@ -27,7 +27,7 @@
 						</td>
 						{% for week_h in weeks %}
 						<td>
-							{% if week != week_h %}
+							{% if week != week_h and week_h.week_number > week.week_number %}
 								{% with week|get_overlaps:week_h as overlaps %}
 									{% for overlap in overlaps %}									
 									<div class="{% if overlap.matchup.eliminated %}eliminated{% elif overlap.matchup.perfect_match %}perfect-match{% endif %}">
