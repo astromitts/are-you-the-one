@@ -20,6 +20,7 @@
 			<img class="profile_img" src="{{pm.participant1.picture}}" />
 		</div>
 		<div class="col-2">
+			{% if request.user.is_superuser %}
 			<form method="POST">
 				{% csrf_token %}
 				{% if pm.perfect_match %}
@@ -28,6 +29,7 @@
 					<input type="submit" class="btn btn-success" name="set-perfect-match" id="id_set-perfect-match" value="Perfect match!" />
 				{% endif %}
 			</form>
+			{% endif %}
 
 		</div>
 		<div class="col">

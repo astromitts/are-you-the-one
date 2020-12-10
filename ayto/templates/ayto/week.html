@@ -20,15 +20,17 @@
 							<td>{{match.matchup.participant1.name}}</td>
 							<td>{{match.matchup.participant2.name}}</td>
 							<td>
+							{% if request.user.is_superuser %}
 								<form method="POST">
 								{% csrf_token %}
 									<input type="hidden" name="undo_match_pk" id="id_undo_match_pk" value="{{match.pk}}">
 									<input name="undo-match" id="id_undo-match" type="submit" class="btn btn-warning" value="undo"/>
 								</form>
+							{% endif %}
 							</td>
 						</tr>
 				{% endfor %}
-				{% if available_participants %}
+				{% if available_participants and request.user.is_superuser %}
 					<form method="POST" action="">
 						{% csrf_token %}
 						<tr>
@@ -54,6 +56,7 @@
 				{% endif %}
 			</table>
 			<table class="table">
+				{% if request.user.is_superuser %}
 				<form method="POST" action="">
 					{% csrf_token %}
 					<tr>
@@ -62,6 +65,7 @@
 						<td><input class="form-control btn btn-primary" type="submit" name="lock-num-matches" id="lock-num-matches" value="Lock" /></td>
 					</tr>
 				</form>
+				{% endif %}
 			</table>
 		</div>
 		<div class="col">
@@ -78,15 +82,17 @@
 						<td>{{tb.matchup.participant2.name}}</td>
 						<td>{{tb.match}}</td>
 						<td>
+							{% if request.user.is_superuser %}
 							<form method="POST">
 							{% csrf_token %}
 								<input type="hidden" name="undo_truthbooth_pk" id="id_undo_truthbooth_pk" value="{{tb.pk}}">
 								<input name="undo-truthbooth" id="id_undo-truthbooth" type="submit" class="btn btn-warning" value="undo"/>
 							</form>
+							{% endif %}
 						</td>
 					</tr>
 				{% endfor %}
-				{% if available_participants %}
+				{% if available_participants and request.user.is_superuser %}
 					<form method="POST" action="">
 						{% csrf_token %}
 						<tr>
