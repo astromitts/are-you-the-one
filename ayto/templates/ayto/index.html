@@ -11,6 +11,7 @@
 			<div id="index-key"><span class="key">Color key:</span>
 				<span class="key match-status_eliminated">Eliminated</span>
 				<span class="key match-status_perfect-match">Perfect Match</span>
+				<span class="key match-status_speculative-match">Speculative Match</span>
 				<span class="key match-status_pending">Overlapped Match</span>
 				<span class="key match-status_mismatch">Unknown Status</span>
 			</div>
@@ -42,7 +43,7 @@
 								{% endif %}
 								{% with week_h|get_overlaps:week as overlaps %}
 									{% for overlap in overlaps %}									
-									<div class="match-status match-status_{% if overlap.matchup.eliminated %}eliminated{% elif overlap.matchup.perfect_match %}perfect-match{%else%}pending{% endif %}">
+									<div class="match-status match-status_{% if overlap.matchup.eliminated %}eliminated{% elif overlap.matchup.perfect_match %}perfect-match{% elif overlap.matchup.speculative_match %}speculative-match{%else%}pending{% endif %}">
 										<a href="{% url 'pm_detail' participant1_slug=overlap.matchup.participant1.url_slug participant2_slug=overlap.matchup.participant2.url_slug %}">{{overlap.matchup.participant1.name}} + {{overlap.matchup.participant2.name}}
 										</a>
 									</div>
@@ -51,7 +52,7 @@
 
 								{% with week_h|get_mismatches:week as mismatches %}
 									{% for mismatch in mismatches %}									
-									<div class="match-status match-status_{% if mismatch.matchup.eliminated %}eliminated{% elif mismatch.matchup.perfect_match %}perfect-match{% else %}mismatch{% endif %}">
+									<div class="match-status match-status_{% if mismatch.matchup.eliminated %}eliminated{% elif mismatch.matchup.perfect_match %}perfect-match{% elif mismatch.matchup.speculative_match %}speculative-match{%else%}mismatch{% endif %}">
 										<a href="{% url 'pm_detail' participant1_slug=mismatch.matchup.participant1.url_slug participant2_slug=mismatch.matchup.participant2.url_slug %}">{{mismatch.matchup.participant1.name}} + {{mismatch.matchup.participant2.name}}
 										</a>
 									</div>

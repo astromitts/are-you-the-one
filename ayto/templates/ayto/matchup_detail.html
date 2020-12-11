@@ -5,6 +5,8 @@
 		<div class="col">
 				{% if pm.perfect_match %}
 					<div class="alert alert-success">
+				{% elif pm.speculative_match %}
+					<div class="alert alert-primary">
 				{% elif pm.eliminated %}
 					<div class="alert alert-warning">
 				{% else %}
@@ -20,16 +22,40 @@
 			<h2>{{pm.participant1}}</h2>
 			<img class="profile_img" src="{{pm.participant1.picture}}" />
 		</div>
-		<div class="col-2">
+		<div class="col-3">
 			{% if request.user.is_superuser %}
-			<form method="POST">
-				{% csrf_token %}
-				{% if pm.perfect_match %}
-					<input type="submit" class="btn btn-danger" name="unset-perfect-match" id="id_unset-perfect-match" value="Unset" />
-				{% else %}
-					<input type="submit" class="btn btn-success" name="set-perfect-match" id="id_set-perfect-match" value="Perfect match!" />
-				{% endif %}
-			</form>
+			{% comment %}
+			<div class="match-detail-button">
+				<form method="POST">
+					{% csrf_token %}
+					{% if pm.perfect_match %}
+						<input type="submit" class="btn btn-danger" name="unset-perfect-match" id="id_unset-perfect-match" value="Unset Perfect Match" />
+					{% else %}
+						<input type="submit" class="btn btn-success" name="set-perfect-match" id="id_set-perfect-match" value="Perfect match!" />
+					{% endif %}
+				</form>
+			</div>
+			{% endcomment %}
+			<div class="match-detail-button">
+				<form method="POST">
+					{% csrf_token %}
+					{% if pm.speculative_match %}
+						<input type="submit" class="btn btn-danger" name="unset-speculative-match" id="id_unset-speculative-match" value="Unset Perfect Match" />
+					{% else %}
+						<input type="submit" class="btn btn-primary" name="set-speculative-match" id="id_set-speculative-match" value="Perfect Match?" />
+					{% endif %}
+				</form>
+			</div>
+			<div class="match-detail-button">
+				<form method="POST">
+					{% csrf_token %}
+					{% if pm.manually_eliminated %}
+						<input type="submit" class="btn btn-success" name="unset-manual-elimination" id="id_unset-manual-elimination" value="Unset Elimination" />
+					{% else %}
+						<input type="submit" class="btn btn-warning" name="set-manual-elimination" id="id_set-manual-elimination" value="Eliminate" />
+					{% endif %}
+				</form>
+			</div>
 			{% endif %}
 
 		</div>

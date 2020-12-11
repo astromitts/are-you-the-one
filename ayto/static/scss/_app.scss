@@ -15,6 +15,14 @@
 	margin-right: 2rem;
 }
 
+.match-detail-button {
+	margin-top: 4rem;
+	input.btn {
+		width: 16rem;
+		padding: 4rem 0;
+	}
+}
+
 .match-status {
 	&_pending {
 		color: #007BFF;
@@ -32,6 +40,12 @@
 		color: #4FD894 !important;
 		a {
 			color: #4FD894 !important;
+		}
+	}
+	&_speculative-match {
+		color: #FF00DE !important;
+		a {
+			color: #FF00DE !important;
 		}
 	}
 	&_mismatch {

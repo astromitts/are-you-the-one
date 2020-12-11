@@ -149,6 +149,7 @@ class PotentialMatchup(models.Model):
         related_name='potential_matchup_participant2',
         on_delete=models.CASCADE
     )
+    speculative_match = models.BooleanField(default=False)
     perfect_match = models.BooleanField(default=False)
     manually_eliminated = models.BooleanField(default=False)
     eliminated_via_truthbooth = models.BooleanField(default=False)
@@ -174,6 +175,8 @@ class PotentialMatchup(models.Model):
             return 'manual elimination'
         elif self.perfect_match:
             return 'perfect match'
+        elif self.speculative_match:
+            return 'speculative match'
         return "can't be eliminated"
 
     @property
@@ -186,6 +189,8 @@ class PotentialMatchup(models.Model):
             return 'manual_elimination'
         elif self.perfect_match:
             return 'perfect_match'
+        elif self.speculative_match:
+            return 'speculative_match'
         return 'not_eliminated'
 
     @classmethod
@@ -223,6 +228,39 @@ class PotentialMatchup(models.Model):
             matchup.manually_eliminated = False
             matchup.save()
         self.perfect_match = False
+        self.save()
+
+    def set_speculative_match(self):
+        related_matchups = PotentialMatchup.objects.filter(
+            models.Q(participant1__in=[self.participant1, self.participant2]) |
+            models.Q(participant2__in=[self.participant1, self.participant2])
+        ).exclude(pk=self.pk).all()
+        for matchup in related_matchups:
+            matchup.manually_eliminated = True
+            matchup.save()
+        self.speculative_match = True
+        self.manually_eliminated = False
+        self.save()
+
+
+    def unset_speculative_match(self):
+        related_matchups = PotentialMatchup.objects.filter(
+            models.Q(participant1__in=[self.participant1, self.participant2]) |
+            models.Q(participant2__in=[self.participant1, self.participant2])
+        ).exclude(pk=self.pk).all()
+        for matchup in related_matchups:
+            matchup.manually_eliminated = False
+            matchup.save()
+        self.speculative_match = False
+        self.save()
+
+    def manually_eliminate(self):
+        self.unset_speculative_match()
+        self.manually_eliminated = True
+        self.save()
+
+    def unset_manually_eliminate(self):
+        self.manually_eliminated = False
         self.save()
 
 

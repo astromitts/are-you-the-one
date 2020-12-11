@@ -92,6 +92,14 @@ class PotentialMatchupDetail(Base):
             self.potential_matchup.set_perfect_match('manual')
         elif 'unset-perfect-match' in request.POST:
             self.potential_matchup.unset_perfect_match()
+        elif 'set-speculative-match' in request.POST:
+            self.potential_matchup.set_speculative_match()
+        elif 'unset-speculative-match' in request.POST:
+            self.potential_matchup.unset_speculative_match()
+        elif 'set-manual-elimination' in request.POST:
+            self.potential_matchup.manually_eliminate()
+        elif 'unset-manual-elimination' in request.POST:
+            self.potential_matchup.unset_manually_eliminate()
         return redirect(self.location)
 
 

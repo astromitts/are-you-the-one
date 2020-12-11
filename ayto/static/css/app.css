@@ -15,6 +15,14 @@
   margin-right: 2rem;
 }
 
+.match-detail-button {
+  margin-top: 4rem;
+}
+.match-detail-button input.btn {
+  width: 16rem;
+  padding: 4rem 0;
+}
+
 .match-status_pending {
   color: #007BFF;
 }
@@ -32,6 +40,12 @@
 }
 .match-status_perfect-match a {
   color: #4FD894 !important;
+}
+.match-status_speculative-match {
+  color: #FF00DE !important;
+}
+.match-status_speculative-match a {
+  color: #FF00DE !important;
 }
 .match-status_mismatch {
   color: #FF9800 !important;
