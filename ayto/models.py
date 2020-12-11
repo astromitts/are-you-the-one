@@ -86,9 +86,9 @@ class Week(models.Model):
 
     def get_available_participants(self):
         unavailable_participants = []
-        for tb in self.truthbooth_set.all():
-            unavailable_participants.append(tb.matchup.participant1)
-            unavailable_participants.append(tb.matchup.participant2)
+        # for tb in self.truthbooth_set.all():
+        #     unavailable_participants.append(tb.matchup.participant1)
+        #     unavailable_participants.append(tb.matchup.participant2)
 
         for pm in PotentialMatchup.objects.filter(perfect_match=True):
             unavailable_participants.append(pm.participant1)
