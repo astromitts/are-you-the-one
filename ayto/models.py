@@ -76,6 +76,14 @@ class Week(models.Model):
     def __str__(self):
         return 'Week #{}'.format(self.week_number)
 
+    @classmethod
+    def get_set_weeks(cls):
+        weeks = []
+        for week in cls.objects.all().order_by('-week_number'):
+            if week.matchup_set.count() > 0:
+                weeks.append(week)
+        return weeks
+
     def get_available_participants(self):
         unavailable_participants = []
         for tb in self.truthbooth_set.all():

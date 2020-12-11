@@ -18,12 +18,14 @@ class Base(View):
     def setup(self, request, *args, **kwargs):
         super(Base, self).setup(request, *args, **kwargs)
         self.weeks = Week.objects.order_by('week_number').all()
+        self.reversed_weeks = Week.objects.order_by('-week_number').all()
         self.participants = Participant.objects.all()
         self.matchups = Matchup.objects.all()
         self.truthbooths = TruthBooth.objects.all()
         self.potential_matches = PotentialMatchup.objects.all()
         self.context = {
             'weeks': self.weeks,
+            'reversed_weeks': self.reversed_weeks,
             'participants': self.participants,
             'matchups': self.matchups,
             'truthbooths': self.truthbooths,
@@ -33,6 +35,21 @@ class Base(View):
 
 class MasterList(Base):
     def get(self, request, *args, **kwargs):
+        self.context.update({
+            'weeks_columns': self.weeks,
+            'weeks_rows': Week.get_set_weeks()
+        })
+        template = loader.get_template('ayto/index.html')
+        return HttpResponse(template.render(self.context, request))
+
+
+class WeekOverlaps(Base):
+    def get(self, request, *args, **kwargs):
+        self.context.update({
+            'weeks_columns': self.weeks,
+            'weeks_rows': Week.objects.filter(
+                week_number__lte=kwargs['week_number']).order_by('-week_number')
+        })
         template = loader.get_template('ayto/index.html')
         return HttpResponse(template.render(self.context, request))
 
@@ -79,7 +96,7 @@ class PotentialMatchupDetail(Base):
 
 
 
-class   WeekView(Base):
+class WeekView(Base):
     def setup(self, request, *args, **kwargs):
         super(WeekView, self).setup(request, *args, **kwargs)
         self.week = Week.objects.get(week_number=kwargs['week_number'])

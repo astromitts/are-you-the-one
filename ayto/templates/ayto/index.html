@@ -9,21 +9,31 @@
 	<div class="row">
 		<div class="col">
 			<table class="table table-bordered">
-				{% for week in weeks %}
+				{% for week in weeks_rows %}
 					<tr>
 						<td>
 							<div>Week&nbsp;{{week.week_number}}&nbsp;({{week.matches_count}}&nbsp;matches)</div>
-							<div>Truth&nbsp;Booth
+							<div>Truth&nbsp;Booth</div>
+							<div>
 							{% for tb in week.truthbooth_set.all %}
-								{{tb.matchup.participant1.name}} +<br />{{tb.matchup.participant2.name}}<br />= {{tb.match}}
+								<strong>
+								{{tb.matchup.participant1.name}} + {{tb.matchup.participant2.name}}</strong>
+								<br />
+								<strong>{{tb.match}}</strong>
 							{% endfor %}
 						</div>
 						</td>
-						{% for week_h in weeks %}
-						<td>
+						{% for week_h in weeks_columns %}
+						<td class="index-cell">
 							{% with week|should_print_week:week_h as print_cell %}
 							{% if print_cell %}
-								<div class="index-label">[week{{week.week_number}} x week{{week_h.week_number}}]</div>
+								{% if week_h.truthbooth_set.count > 0 and week.truthbooth_set.count > 0 %}
+								<div class="index-label">
+									[week{{week.week_number}} x week{{week_h.week_number}}]
+								</div>
+								{% else %}
+									&nbsp;
+								{% endif %}
 								{% with week_h|get_overlaps:week as overlaps %}
 									{% for overlap in overlaps %}									
 									<div class="{% if overlap.matchup.eliminated %}eliminated{% elif overlap.matchup.perfect_match %}perfect-match{% endif %}">
