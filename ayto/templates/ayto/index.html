@@ -33,7 +33,7 @@
 						<td class="index-cell">
 							{% with week|should_print_week:week_h as print_cell %}
 							{% if print_cell %}
-								{% if week_h.truthbooth_set.count > 0 and week.truthbooth_set.count > 0 %}
+								{% if week_h.locked and week.locked > 0 %}
 								<div class="index-label">
 									[week{{week.week_number}} x week{{week_h.week_number}}]
 								</div>

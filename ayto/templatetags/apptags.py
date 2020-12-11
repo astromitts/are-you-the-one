@@ -13,7 +13,9 @@ def pdb(item, item2=None):
 @register.filter
 def should_print_week(week1, week2):
     should_print_week = False
-    if week1.week_number == 1 and week2.week_number == 1:
+    if not week1.locked:
+        return False
+    elif week1.week_number == 1 and week2.week_number == 1:
         should_print_week = True
     elif week1 == week2:
         should_print_week = False
@@ -37,7 +39,7 @@ def overlaps_for_participant(weekly_overlaps, participant):
 @register.filter
 def get_overlaps(week1, week2):
     overlaps = []
-    if week1.matchup_set:
+    if week1 != week2 and week1.locked:
         compare_matchups = []
         for matchup in week2.matchup_set.all():
             compare_matchups.append(matchup.matchup)
@@ -49,12 +51,14 @@ def get_overlaps(week1, week2):
 
 @register.filter
 def get_mismatches(week1, week2):
+    if week1 == week2:
+        return week1.matchup_set.all()
     mismatches = []
-    if week2.matchup_set.count() > 0:
+    if week2.locked:
         compare_matchups = []
-        for matchup in week2.matchup_set.all():
-            compare_matchups.append(matchup.matchup)
         for matchup in week1.matchup_set.all():
+            compare_matchups.append(matchup.matchup)
+        for matchup in week2.matchup_set.all():
             if matchup.matchup  not in compare_matchups:
                 mismatches.append(matchup)
     return mismatches

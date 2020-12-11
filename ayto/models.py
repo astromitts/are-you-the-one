@@ -5,7 +5,7 @@ class Participant(models.Model):
     name = models.CharField(max_length=100)
     full_name = models.CharField(max_length=100)
     picture = models.URLField(blank=True, null=True)
-    url_slug = models.CharField(max_length=100, null=True, blank=True)
+    url_slug = models.CharField(max_length=100, unique=True)
 
     @property
     def perfect_match(self):
@@ -72,6 +72,7 @@ class Participant(models.Model):
 class Week(models.Model):
     week_number = models.IntegerField()
     matches_count = models.IntegerField(default=0)
+    locked = models.BooleanField(default=False)
 
     def __str__(self):
         return 'Week #{}'.format(self.week_number)

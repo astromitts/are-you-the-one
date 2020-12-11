@@ -96,9 +96,9 @@ class PotentialMatchupDetail(Base):
 
 
 
-class WeekView(Base):
+class WeeklyMatchup(Base):
     def setup(self, request, *args, **kwargs):
-        super(WeekView, self).setup(request, *args, **kwargs)
+        super(WeeklyMatchup, self).setup(request, *args, **kwargs)
         self.week = Week.objects.get(week_number=kwargs['week_number'])
         self.location = reverse('week_index', kwargs={'week_number': self.week.week_number})
         self.available_participants = self.week.get_available_participants
@@ -142,6 +142,7 @@ class WeekView(Base):
                 truthbooth.save()
         elif 'lock-num-matches' in request.POST:
             self.week.matches_count = int(request.POST['num_matches'])
+            self.week.locked = True
             self.week.save()
         elif 'undo-match' in request.POST:
             match = Matchup.objects.get(pk=request.POST['undo_match_pk'])
