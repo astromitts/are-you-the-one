@@ -40,7 +40,7 @@ class MasterList(Base):
 class ParticipantView(Base):
     def get(self, request, *args, **kwargs):
         template = loader.get_template('ayto/participant.html')
-        participant = Participant.objects.get(pk=kwargs['participant_pk'])
+        participant = Participant.objects.get(url_slug=kwargs['participant_slug'])
         self.context.update({
             'participant': participant,
         })
@@ -50,8 +50,17 @@ class ParticipantView(Base):
 class PotentialMatchupDetail(Base):
     def setup(self, request, *args, **kwargs):
         super(PotentialMatchupDetail, self).setup(request, *args, **kwargs)
-        self.potential_matchup = PotentialMatchup.objects.get(pk=kwargs['pm_pk'])
-        self.location = reverse('pm_detail', kwargs={'pm_pk': self.potential_matchup.pk})
+        self.participant1 = Participant.objects.get(url_slug=kwargs['participant1_slug'])
+        self.participant2 = Participant.objects.get(url_slug=kwargs['participant2_slug'])
+
+        self.potential_matchup = PotentialMatchup.get(self.participant1, self.participant2)
+        self.location = reverse(
+            'pm_detail',
+            kwargs={
+                'participant1_slug': self.participant1.url_slug,
+                'participant2_slug': self.participant2.url_slug
+            }
+        )
 
     def get(self, request, *args, **kwargs):
         template = loader.get_template('ayto/matchup_detail.html')

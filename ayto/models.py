@@ -5,6 +5,7 @@ class Participant(models.Model):
     name = models.CharField(max_length=100)
     full_name = models.CharField(max_length=100)
     picture = models.URLField(blank=True, null=True)
+    url_slug = models.CharField(max_length=100, null=True, blank=True)
 
     @property
     def perfect_match(self):

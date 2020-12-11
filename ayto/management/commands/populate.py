@@ -80,13 +80,14 @@ class Command(BaseCommand):
         Participant.objects.all().delete()
         PotentialMatchup.objects.all().delete()
 
-        for i in range(1, 9):
+        for i in range(1, 11):
             week = Week(week_number=i)
             week.save()
 
         for participant in PARTICIPANTS:
             if not participant.get('name'):
                 participant['name'] = participant['full_name'].split(' ')[0]
+            participant['url_slug'] = participant['full_name'].lower().replace(' ', '-')
             participant_obj = Participant(**participant)
             participant_obj.save()
 

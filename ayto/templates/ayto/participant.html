@@ -44,7 +44,7 @@
 				</tr>
 			{% for matchup in participant.potential_matchups %}
 				<tr>
-					<td><a href="{% url 'participant_index' participant_pk=matchup.match.pk %}">{{matchup.match.name}}</a></td>
+					<td><a href="{% url 'participant_index' participant_slug=matchup.match.url_slug %}">{{matchup.match.name}}</a></td>
 					<td>{{matchup.elimination_type}}</td>
 					<td>
 						{% for matched_week in matchup.weeks_matched %}
@@ -62,7 +62,7 @@
 												<td></td>
 											{% endif %}
 											<td>
-												<a href="{% url 'pm_detail' pm_pk=overlap.pk %}">
+												<a href="{% url 'pm_detail' participant1_slug=overlap.participant1.url_slug participant2_slug=overlap.participant2.url_slug %}">
 													{{overlap.participant1}} + {{overlap.participant2}}
 												</a>
 											</td>

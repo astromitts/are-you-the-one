@@ -9,43 +9,40 @@
 	<div class="row">
 		<div class="col">
 			<table class="table table-bordered">
-				<tr><td></td>
-				{% for week in weeks %}
-					<td>
-						{{week.week_number}}&nbsp;({{week.matches_count}})
-					</td>
-				{% endfor %}
-				</tr>
 				{% for week in weeks %}
 					<tr>
 						<td>
-							{{week.week_number}}&nbsp;({{week.matches_count}})
+							<div>Week&nbsp;{{week.week_number}}&nbsp;({{week.matches_count}}&nbsp;matches)</div>
+							<div>Truth&nbsp;Booth
 							{% for tb in week.truthbooth_set.all %}
-								<br />
-								{{tb.matchup.participant1}} +<br />{{tb.matchup.participant2}}<br />= {{tb.match}}
+								{{tb.matchup.participant1.name}} +<br />{{tb.matchup.participant2.name}}<br />= {{tb.match}}
 							{% endfor %}
+						</div>
 						</td>
 						{% for week_h in weeks %}
 						<td>
-							{% if week != week_h and week_h.week_number > week.week_number %}
-								{% with week|get_overlaps:week_h as overlaps %}
+							{% with week|should_print_week:week_h as print_cell %}
+							{% if print_cell %}
+								<div class="index-label">[week{{week.week_number}} x week{{week_h.week_number}}]</div>
+								{% with week_h|get_overlaps:week as overlaps %}
 									{% for overlap in overlaps %}									
 									<div class="{% if overlap.matchup.eliminated %}eliminated{% elif overlap.matchup.perfect_match %}perfect-match{% endif %}">
-										<a href="{% url 'pm_detail' pm_pk=overlap.matchup.pk %}">{{overlap.matchup.participant1.name}} + {{overlap.matchup.participant2.name}}
+										<a href="{% url 'pm_detail' participant1_slug=overlap.matchup.participant1.url_slug participant2_slug=overlap.matchup.participant2.url_slug %}">{{overlap.matchup.participant1.name}} + {{overlap.matchup.participant2.name}}
 										</a>
 									</div>
 									{% endfor %}
 								{% endwith %}
 
-								{% with week|get_mismatches:week_h as mismatches %}
+								{% with week_h|get_mismatches:week as mismatches %}
 									{% for mismatch in mismatches %}									
 									<div class="{% if mismatch.matchup.eliminated %}eliminated{% elif mismatch.matchup.perfect_match %}perfect-match{% else %}mismatch{% endif %}">
-										<a href="{% url 'pm_detail' pm_pk=mismatch.matchup.pk %}">{{mismatch.matchup.participant1.name}} + {{mismatch.matchup.participant2.name}}
+										<a href="{% url 'pm_detail' participant1_slug=mismatch.matchup.participant1.url_slug participant2_slug=mismatch.matchup.participant2.url_slug %}">{{mismatch.matchup.participant1.name}} + {{mismatch.matchup.participant2.name}}
 										</a>
 									</div>
 									{% endfor %}
 								{% endwith %}
 							{% endif %}
+							{% endwith %}
 						</td>
 						{% endfor %}
 					</tr>

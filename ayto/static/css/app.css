@@ -28,4 +28,12 @@
   color: #FF9800 !important;
 }
 
+.index-label {
+  font-size: 0.7rem;
+}
+
+body {
+  padding: 2rem;
+}
+
 /*# sourceMappingURL=app.css.map */

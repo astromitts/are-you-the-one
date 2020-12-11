@@ -1,4 +1,5 @@
 {% extends 'ayto/base.html' %}
+{% load apptags %}
 {% block page_content %}
 	<div class="row">
 		<div class="col">
@@ -50,19 +51,24 @@
 							<strong>overlaps</strong>
 							<table>
 							{% for overlap_week, overlaps in matchup.week.get_overlaps.items %}
-								<tr>
 								{% for overlap in overlaps %}
 									{% if forloop.first %}
-										<td>Week #{{overlap_week.week_number}} </td>
-									{% else %}
-										<td></td>
+										
+										<tr>
+											<td>Week #{{overlap_week.week_number}}</td>
+											<td>Total: {{overlap_week.matches_count}}</td>
+										</tr>
 									{% endif %}
-									<td>
-										<a href="{% url 'pm_detail' pm_pk=overlap.pk %}">
-											{{overlap.participant1}} + {{overlap.participant2}}
-										</a>
-									</td>
-								</tr>
+									<tr>
+										<td></td>
+										<td>
+											<div class="{% if overlap.eliminated %}eliminated{% elif overlap.perfect_match %}perfect-match{% endif %}">
+												<a href="{% url 'pm_detail' pm_pk=overlap.pk %}">
+													{{overlap.participant1}} + {{overlap.participant2}}
+												</a>
+											</div>
+										</td>
+									</tr>
 								{% endfor %}
 							{% endfor %}
 							</table>
