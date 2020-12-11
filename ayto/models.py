@@ -169,15 +169,17 @@ class PotentialMatchup(models.Model):
     @property
     def elimination_type(self):
         if self.eliminated_via_truthbooth:
-            return 'eliminated via truthbooth'
+            return 'Eliminated Via Truthbooth'
         elif self.eliminated_via_blackout:
-            return 'eliminated via blackout'
+            return 'Eliminated Via Blackout'
         elif self.manually_eliminated:
-            return 'manual elimination'
+            return 'Manual Elimination'
         elif self.perfect_match:
-            return 'perfect match'
+            if self.perfect_match_via_truthbooth:
+                return 'Perfect Match: Truth Booth'
+            return 'Final Match'
         elif self.speculative_match:
-            return 'speculative match'
+            return 'Speculative Match'
         return "can't be eliminated"
 
     @property

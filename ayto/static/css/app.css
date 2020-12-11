@@ -57,6 +57,11 @@
   color: #FF9800 !important;
 }
 
+.final-result-type {
+  margin-top: 4rem;
+  font-weight: bold;
+}
+
 .index-label {
   font-size: 0.7rem;
 }
