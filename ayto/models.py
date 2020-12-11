@@ -80,7 +80,7 @@ class Week(models.Model):
     def get_set_weeks(cls):
         weeks = []
         for week in cls.objects.all().order_by('-week_number'):
-            if week.matchup_set.count() > 0:
+            if week.matchup_set.count() > 0 or week.truthbooth_set.count() > 0:
                 weeks.append(week)
         return weeks
 
