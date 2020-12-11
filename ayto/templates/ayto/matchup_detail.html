@@ -56,6 +56,16 @@
 					{% endif %}
 				</form>
 			</div>
+			<div class="match-detail-button">
+				<form method="POST">
+					{% csrf_token %}
+					{% if pm.perfect_match %}
+						<input type="submit" class="btn btn-warning" name="unset-final-match" id="id_final-match" value="Unset Final Match" />
+					{% else %}
+						<input type="submit" class="btn btn-danger" name="set-final-match" id="id_set-final-match" value="Final Match!" />
+					{% endif %}
+				</form>
+			</div>
 			{% endif %}
 
 		</div>

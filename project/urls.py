@@ -5,6 +5,7 @@ from ayto.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', MasterList.as_view(), name='index'),
+    path('results/', FinalResults.as_view(), name='final_results'),
     path('participant/<str:participant_slug>/', ParticipantView.as_view(), name='participant_index'),
     path('week/<int:week_number>/', WeeklyMatchup.as_view(), name='week_index'),
     path('week/<int:week_number>/overlaps/', WeekOverlaps.as_view(), name='week_overlaps'),

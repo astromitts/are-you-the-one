@@ -151,6 +151,7 @@ class PotentialMatchup(models.Model):
     )
     speculative_match = models.BooleanField(default=False)
     perfect_match = models.BooleanField(default=False)
+    perfect_match_via_truthbooth = models.BooleanField(default=False)
     manually_eliminated = models.BooleanField(default=False)
     eliminated_via_truthbooth = models.BooleanField(default=False)
     eliminated_via_blackout = models.BooleanField(default=False)

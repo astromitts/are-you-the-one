@@ -1,0 +1,32 @@
+{% extends 'ayto/base.html' %}
+{% load apptags %}
+{% block page_content %}
+	<div class="row">
+		<div class="col">
+			<table class="table">
+				<tr>
+					<th colspan="100%">Perfect Matches</th>
+				</tr>
+				{% for pm in perfect_matches %}
+					<tr>
+						<td>
+							<div>{{pm.participant1.full_name}}</div>
+							<div><img class="profile_img_results" src="{{pm.participant1.picture}}" /></div>
+						</td>
+						<td>
+							<div>{{pm.participant2.full_name}}</div>
+							<div><img class="profile_img_results" src="{{pm.participant2.picture}}" /></div>
+						</td>
+						<td>
+							{% if pm.speculative_match %}
+								<div class="alert alert-success">You got it!</div>
+							{% else %}
+								<div class="alert alert-warning">You missed it!</div>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+{% endblock %}

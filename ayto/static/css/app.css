@@ -1,6 +1,9 @@
 .profile_img {
   width: 300px;
 }
+.profile_img_results {
+  width: 100px;
+}
 
 .wrapper {
   width: 200px;
@@ -16,11 +19,11 @@
 }
 
 .match-detail-button {
-  margin-top: 4rem;
+  margin-top: 2rem;
 }
 .match-detail-button input.btn {
   width: 16rem;
-  padding: 4rem 0;
+  padding: 2rem 0;
 }
 
 .match-status_pending {

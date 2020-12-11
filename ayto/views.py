@@ -46,6 +46,15 @@ class MasterList(Base):
         return HttpResponse(template.render(self.context, request))
 
 
+class FinalResults(Base):
+    def get(self, request, *args, **kwargs):
+        template = loader.get_template('ayto/results.html')
+        self.context.update({
+            'perfect_matches': PotentialMatchup.objects.filter(perfect_match=True).all()
+        })
+        return HttpResponse(template.render(self.context, request))
+
+
 class WeekOverlaps(Base):
     def get(self, request, *args, **kwargs):
         self.context.update({
@@ -97,9 +106,9 @@ class PotentialMatchupDetail(Base):
                 'Oops - you need to be logged in or running the app locally to post changes'
             )
             return redirect(self.location)
-        if 'set-perfect-match' in request.POST:
+        if 'set-final-match' in request.POST:
             self.potential_matchup.set_perfect_match('manual')
-        elif 'unset-perfect-match' in request.POST:
+        elif 'unset-final-match' in request.POST:
             self.potential_matchup.unset_perfect_match()
         elif 'set-speculative-match' in request.POST:
             self.potential_matchup.set_speculative_match()
@@ -153,6 +162,7 @@ class WeeklyMatchup(Base):
             if participant1 == participant2:
                 messages.error(request, 'Match Participants need to be different people')
             else:
+                perfect_match = request.POST.get('perfect_match') == 'Y'
                 source_matchup = PotentialMatchup.get(
                     participant1=participant1,
                     participant2=participant2
@@ -160,9 +170,15 @@ class WeeklyMatchup(Base):
                 truthbooth = TruthBooth(
                     week=self.week,
                     matchup=source_matchup,
-                    perfect_match=request.POST.get('perfect_match') == 'Y'
+                    perfect_match=perfect_match
                 )
                 truthbooth.save()
+                if perfect_match:
+                    source_matchup.perfect_match_via_truthbooth = True
+                else:
+                    source_matchup.perfect_match_via_truthbooth = False
+                source_matchup.save()
+
         elif 'lock-num-matches' in request.POST:
             self.week.matches_count = int(request.POST['num_matches'])
             self.week.locked = True

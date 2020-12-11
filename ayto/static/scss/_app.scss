@@ -1,5 +1,8 @@
 .profile_img {
 	width: 300px;
+	&_results {
+		width: 100px;
+	}
 }
 
 .wrapper {
@@ -16,10 +19,10 @@
 }
 
 .match-detail-button {
-	margin-top: 4rem;
+	margin-top: 2rem;
 	input.btn {
 		width: 16rem;
-		padding: 4rem 0;
+		padding: 2rem 0;
 	}
 }
 
