@@ -6,22 +6,39 @@
 	width: 200px;
     float: left;
 }
-.eliminated {
-	color: #CCCCCC !important;
-	a {
+
+#index-key {
+	padding: 1rem 0 .5rem 0;
+}
+
+.key {
+	margin-right: 2rem;
+}
+
+.match-status {
+	&_pending {
+		color: #007BFF;
+		a {
+			color: #007BFF !important;
+		}
+	}
+	&_eliminated {
 		color: #CCCCCC !important;
+		a {
+			color: #CCCCCC !important;
+		}
 	}
-}
-.perfect-match {
-	color: #4FD894 !important;
-	a {
+	&_perfect-match {
 		color: #4FD894 !important;
+		a {
+			color: #4FD894 !important;
+		}
 	}
-}
-.mismatch {
-	color: #FF9800 !important;
-	a {
+	&_mismatch {
 		color: #FF9800 !important;
+		a {
+			color: #FF9800 !important;
+		}
 	}
 }
 .index-label {

@@ -7,24 +7,36 @@
   float: left;
 }
 
-.eliminated {
-  color: #CCCCCC !important;
-}
-.eliminated a {
-  color: #CCCCCC !important;
+#index-key {
+  padding: 1rem 0 0.5rem 0;
 }
 
-.perfect-match {
-  color: #4FD894 !important;
-}
-.perfect-match a {
-  color: #4FD894 !important;
+.key {
+  margin-right: 2rem;
 }
 
-.mismatch {
+.match-status_pending {
+  color: #007BFF;
+}
+.match-status_pending a {
+  color: #007BFF !important;
+}
+.match-status_eliminated {
+  color: #CCCCCC !important;
+}
+.match-status_eliminated a {
+  color: #CCCCCC !important;
+}
+.match-status_perfect-match {
+  color: #4FD894 !important;
+}
+.match-status_perfect-match a {
+  color: #4FD894 !important;
+}
+.match-status_mismatch {
   color: #FF9800 !important;
 }
-.mismatch a {
+.match-status_mismatch a {
   color: #FF9800 !important;
 }
 
