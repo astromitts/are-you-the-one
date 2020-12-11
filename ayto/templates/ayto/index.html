@@ -22,13 +22,22 @@
 							<div>Week&nbsp;{{week.week_number}}&nbsp;({{week.matches_count}}&nbsp;matches)</div>
 							<div>Truth&nbsp;Booth</div>
 							<div>
-							{% for tb in week.truthbooth_set.all %}
-								<strong>
-								{{tb.matchup.participant1.name}} + {{tb.matchup.participant2.name}}</strong>
-								<br />
-								<strong>{{tb.match}}</strong>
-							{% endfor %}
-						</div>
+								{% for tb in week.truthbooth_set.all %}
+									<strong>
+									{{tb.matchup.participant1.name}} + {{tb.matchup.participant2.name}}</strong>
+									<br />
+									<strong>{{tb.match}}</strong>
+								{% endfor %}
+							</div>
+							<div>
+								<strong>Matches</strong>
+								{% for match in week.matchup_set.all %}
+								<div  class="match-status match-status_{% if match.matchup.eliminated %}eliminated{% elif match.matchup.perfect_match %}perfect-match{% elif match.matchup.speculative_match %}speculative-match{%else%}pending{% endif %}">
+									<a href="{% url 'pm_detail' participant1_slug=match.matchup.participant1.url_slug participant2_slug=match.matchup.participant2.url_slug %}">{{match.matchup.participant1.name}} + {{match.matchup.participant2.name}}
+									</a>
+								</div>
+								{% endfor %}
+							</div>
 						</td>
 						{% for week_h in weeks_columns %}
 						<td class="index-cell">

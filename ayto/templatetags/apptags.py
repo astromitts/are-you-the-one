@@ -16,7 +16,7 @@ def should_print_week(week1, week2):
     if not week1.locked:
         return False
     elif week1.week_number == 1 and week2.week_number == 1:
-        should_print_week = True
+        should_print_week = False
     elif week1 == week2:
         should_print_week = False
     elif week1.week_number > week2.week_number:
