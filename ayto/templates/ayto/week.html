@@ -20,7 +20,7 @@
 							<td>{{match.matchup.participant1.name}}</td>
 							<td>{{match.matchup.participant2.name}}</td>
 							<td>
-							{% if request.user.is_superuser %}
+							{% if has_form_permission %}
 								<form method="POST">
 								{% csrf_token %}
 									<input type="hidden" name="undo_match_pk" id="id_undo_match_pk" value="{{match.pk}}">
@@ -30,7 +30,7 @@
 							</td>
 						</tr>
 				{% endfor %}
-				{% if available_participants and request.user.is_superuser %}
+				{% if available_participants and has_form_permission %}
 					<form method="POST" action="">
 						{% csrf_token %}
 						<tr>
@@ -56,7 +56,7 @@
 				{% endif %}
 			</table>
 			<table class="table">
-				{% if request.user.is_superuser %}
+				{% if has_form_permission %}
 				<form method="POST" action="">
 					{% csrf_token %}
 					<tr>

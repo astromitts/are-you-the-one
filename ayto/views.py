@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -23,13 +24,15 @@ class Base(View):
         self.matchups = Matchup.objects.all()
         self.truthbooths = TruthBooth.objects.all()
         self.potential_matches = PotentialMatchup.objects.all()
+        self.has_form_permission = settings.ENVIRONMENT == 'local' or request.user.is_superuser
         self.context = {
             'weeks': self.weeks,
             'reversed_weeks': self.reversed_weeks,
             'participants': self.participants,
             'matchups': self.matchups,
             'truthbooths': self.truthbooths,
-            'potential_matches': self.potential_matches
+            'potential_matches': self.potential_matches,
+            'has_form_permission': self.has_form_permission
         }
 
 
@@ -88,6 +91,12 @@ class PotentialMatchupDetail(Base):
         return HttpResponse(template.render(self.context, request))
 
     def post(self, request, *args, **kwargs):
+        if not self.has_form_permission:
+            messages.error(
+                request,
+                'Oops - you need to be logged in or running the app locally to post changes'
+            )
+            return redirect(self.location)
         if 'set-perfect-match' in request.POST:
             self.potential_matchup.set_perfect_match('manual')
         elif 'unset-perfect-match' in request.POST:
@@ -120,6 +129,12 @@ class WeeklyMatchup(Base):
         return HttpResponse(template.render(self.context, request))
 
     def post(self, request, *args, **kwargs):
+        if not self.has_form_permission:
+            messages.error(
+                request,
+                'Oops - you need to be logged in or running the app locally to post changes'
+            )
+            return redirect(self.location)
         if 'lock-match' in request.POST:
             participant1 = Participant.objects.get(pk=request.POST['participant1'])
             participant2 = Participant.objects.get(pk=request.POST['participant2'])

@@ -23,7 +23,7 @@
 			<img class="profile_img" src="{{pm.participant1.picture}}" />
 		</div>
 		<div class="col-3">
-			{% if request.user.is_superuser %}
+			{% if has_form_permission %}
 			{% comment %}
 			<div class="match-detail-button">
 				<form method="POST">
