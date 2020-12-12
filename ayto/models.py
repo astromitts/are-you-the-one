@@ -198,6 +198,12 @@ class PotentialMatchup(models.Model):
 
     @classmethod
     def get(cls, participant1, participant2):
+        if isinstance(participant1, str):
+            participant1 = Participant.objects.get(full_name=participant1)
+
+        if isinstance(participant2, str):
+            participant2 = Participant.objects.get(full_name=participant2)
+
         return cls.objects.filter(
             models.Q(participant1=participant1) |
             models.Q(participant2=participant1)
@@ -291,9 +297,16 @@ class TruthBooth(models.Model):
     matchup = models.ForeignKey(PotentialMatchup, on_delete=models.CASCADE)
     perfect_match = models.BooleanField(default=False)
 
-    @property
-    def as_lists(self):
-        return [[self.participant1, self.participant2], [self.participant2, self.participant1] ]
+    class Meta:
+        unique_together = ['week', 'matchup']
+
+    def __str__(self):
+        return '{}: {} + {} = {}'.format(
+            self.week,
+            self.matchup.participant1,
+            self.matchup.participant2,
+            self.match
+        )
 
     def save(self, *args, **kwargs):
         super(TruthBooth, self).save(*args, **kwargs)
@@ -303,20 +316,20 @@ class TruthBooth(models.Model):
             self.matchup.eliminated_via_truthbooth = True
             self.matchup.save()
 
+    def update(self, perfect_match):
+        self.perfect_match = perfect_match
+        self.save()
+
+    @property
+    def as_lists(self):
+        return [[self.participant1, self.participant2], [self.participant2, self.participant1] ]
+
     @property
     def match(self):
         if self.perfect_match:
             return 'Perfect match'
         else:
             return 'No match'
-
-    def __str__(self):
-        return '{}: {} + {} = {}'.format(
-            self.week,
-            self.matchup.participant1,
-            self.matchup.participant2,
-            self.match
-        )
 
     @classmethod
     def get_for_participants(cls, participant1, participant2):
