@@ -34,4 +34,7 @@ class Command(BaseCommand):
                 'participant2': match.matchup.participant2.full_name,
                 'perfect_match': match.perfect_match
             })
+
+        with open('data/week{}.json'.format(week.week_number), 'w+') as f:
+            f.write(json.dumps(data))
         print(json.dumps(data))
