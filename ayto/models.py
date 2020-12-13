@@ -64,6 +64,20 @@ class Participant(models.Model):
                 )
         return formatted_matchups
 
+    @classmethod
+    def get(cls, participant):
+        """ Returns an instance of Participant where given participant
+            is either a full name or first name.
+
+            If participant is already a participant object, just return it.
+        """
+        if isinstance(participant, cls):
+            return participant
+        elif isinstance(participant, str) and ' ' in participant:
+            participant = Participant.objects.get(full_name=participant)
+        elif isinstance(participant, str) and ' ' not in participant:
+            participant = Participant.objects.get(name=participant)
+        return participant
 
     def __str__(self):
         return self.full_name
@@ -110,6 +124,15 @@ class Week(models.Model):
         if self.matches_count == 0:
             for matchup in self.matchup_set.all():
                 matchup.matchup.eliminated_via_blackout = True
+                matchup.matchup.save()
+        elif self.matches_count == self.matchup_set.count():
+            for matchup in self.matchup_set.all():
+                matchup.matchup.perfect_match = True
+                matchup.matchup.save()
+        else:
+            for matchup in self.matchup_set.all():
+                matchup.matchup.perfect_match = False
+                matchup.matchup.eliminated_via_blackout = False
                 matchup.matchup.save()
 
     def get_overlaps(self):
@@ -196,13 +219,17 @@ class PotentialMatchup(models.Model):
             return 'speculative_match'
         return 'not_eliminated'
 
+    @property
+    def related_matchups(self):
+        return PotentialMatchup.objects.filter(
+            models.Q(participant1__in=[self.participant1, self.participant2]) |
+            models.Q(participant2__in=[self.participant1, self.participant2])
+        ).exclude(pk=self.pk).all()
+
     @classmethod
     def get(cls, participant1, participant2):
-        if isinstance(participant1, str):
-            participant1 = Participant.objects.get(full_name=participant1)
-
-        if isinstance(participant2, str):
-            participant2 = Participant.objects.get(full_name=participant2)
+        participant1 = Participant.get(participant1)
+        participant2 = Participant.get(participant2)
 
         return cls.objects.filter(
             models.Q(participant1=participant1) |
@@ -212,32 +239,48 @@ class PotentialMatchup(models.Model):
             models.Q(participant2=participant2)
         ).first()
 
+    @classmethod
+    def get_all(cls, participant1, participant2):
+        participant1 = Participant.get(participant1)
+        participant2 = Participant.get(participant2)
+
+        return cls.objects.filter(
+            models.Q(
+                models.Q(participant1=participant1) |
+                models.Q(participant2=participant1)
+            ) |
+            models.Q(
+                models.Q(participant1=participant2) |
+                models.Q(participant2=participant2)
+            )
+        ).all()
+
     def set_perfect_match(self, match_type):
-        related_matchups = PotentialMatchup.objects.filter(
-            models.Q(participant1__in=[self.participant1, self.participant2]) |
-            models.Q(participant2__in=[self.participant1, self.participant2])
-        ).exclude(pk=self.pk).all()
-        for matchup in related_matchups:
+        for matchup in self.related_matchups:
             if match_type == 'truthbooth':
                 matchup.eliminated_via_truthbooth = True
             else:
                 matchup.manually_eliminated = True
             matchup.save()
+        if match_type == 'truthbooth':
+            self.perfect_match_via_truthbooth = True
         self.perfect_match = True
         self.save()
 
 
-    def unset_perfect_match(self):
-        related_matchups = PotentialMatchup.objects.filter(
-            models.Q(participant1__in=[self.participant1, self.participant2]) |
-            models.Q(participant2__in=[self.participant1, self.participant2])
-        ).exclude(pk=self.pk).all()
-        for matchup in related_matchups:
-            matchup.eliminated_via_truthbooth = False
-            matchup.manually_eliminated = False
-            matchup.save()
-        self.perfect_match = False
+    def unset_perfect_match(self, match_type):
+        if match_type == 'truthbooth':
+            self.perfect_match_via_truthbooth = False
+        else:
+            self.perfect_match = False
         self.save()
+
+        for matchup in self.related_matchups:
+            if match_type == 'truthbooth':
+                matchup.eliminated_via_truthbooth = False
+            else:
+                matchup.manually_eliminated = False
+            matchup.save()
 
     def set_speculative_match(self):
         related_matchups = PotentialMatchup.objects.filter(
@@ -310,11 +353,31 @@ class TruthBooth(models.Model):
 
     def save(self, *args, **kwargs):
         super(TruthBooth, self).save(*args, **kwargs)
-        if self.perfect_match == True:
+        if self.perfect_match:
             self.matchup.set_perfect_match(match_type='truthbooth')
         else:
-            self.matchup.eliminated_via_truthbooth = True
+            self.matchup.perfect_match_via_truthbooth = False
             self.matchup.save()
+            self.matchup.unset_perfect_match(match_type='truthbooth')
+
+    @classmethod
+    def lock(cls, week, participant1, participant2, perfect_match):
+        truthbooth_matchup = PotentialMatchup.get(
+            participant1, participant2)
+        truthbooth = cls(
+            week=week,
+            matchup=truthbooth_matchup,
+            perfect_match=perfect_match
+        )
+        truthbooth.save()
+
+        if perfect_match:
+            truthbooth_matchup.perfect_match_via_truthbooth = True
+        else:
+            truthbooth_matchup.perfect_match_via_truthbooth = False
+        truthbooth_matchup.save()
+        return truthbooth
+
 
     def update(self, perfect_match):
         self.perfect_match = perfect_match

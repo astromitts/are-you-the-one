@@ -2,12 +2,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.utils import IntegrityError
 import json
 
-from ayto.models import (
-    Week,
-    Matchup,
-    PotentialMatchup,
-    TruthBooth
-)
+from ayto.models import Week
+from ayto.utils import load_week_from_json
 
 
 class Command(BaseCommand):
@@ -30,29 +26,5 @@ class Command(BaseCommand):
         except Week.DoesNotExist:
             error = 'Week {} not found. Perhaps you need to run `manage.py populate` first?'.format(week_number)
             raise CommandError(error)
-        week.matches_count = data['matches_count']
-        week.locked = data['locked']
-        week.save()
 
-        for match in data['matchups']:
-            source_matchup = PotentialMatchup.get(match['participant1'], match['participant2'])
-            matchup = Matchup(
-                week=week,
-                matchup=source_matchup
-            )
-            try:
-                matchup.save()
-            except IntegrityError:
-                pass
-
-        for match in data['truthbooths']:
-            source_matchup = PotentialMatchup.get(match['participant1'], match['participant2'])
-            matchup = TruthBooth(
-                week=week,
-                matchup=source_matchup,
-                perfect_match=match['perfect_match']
-            )
-            try:
-                matchup.save()
-            except IntegrityError:
-                matchup.update(perfect_match=perfect_match)
+        load_week_from_json(week, data)

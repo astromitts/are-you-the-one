@@ -109,7 +109,7 @@ class PotentialMatchupDetail(Base):
         if 'set-final-match' in request.POST:
             self.potential_matchup.set_perfect_match('manual')
         elif 'unset-final-match' in request.POST:
-            self.potential_matchup.unset_perfect_match()
+            self.potential_matchup.unset_perfect_match('manual')
         elif 'set-speculative-match' in request.POST:
             self.potential_matchup.set_speculative_match()
         elif 'unset-speculative-match' in request.POST:
@@ -163,26 +163,22 @@ class WeeklyMatchup(Base):
                 messages.error(request, 'Match Participants need to be different people')
             else:
                 perfect_match = request.POST.get('perfect_match') == 'Y'
-                source_matchup = PotentialMatchup.get(
-                    participant1=participant1,
-                    participant2=participant2
-                )
-                truthbooth = TruthBooth(
+                TruthBooth.lock(
                     week=self.week,
-                    matchup=source_matchup,
+                    participant1=participant1,
+                    participant2=participant2,
                     perfect_match=perfect_match
                 )
-                truthbooth.save()
-                if perfect_match:
-                    source_matchup.perfect_match_via_truthbooth = True
-                else:
-                    source_matchup.perfect_match_via_truthbooth = False
-                source_matchup.save()
-
         elif 'lock-num-matches' in request.POST:
             self.week.matches_count = int(request.POST['num_matches'])
             self.week.locked = True
             self.week.save()
+
+            if self.week.matches_count == 0:
+                self.week.save_blackout()
+            elif self.week.matches_count == self.week.matchup_set.count():
+                self.week.save_final_matches()
+
         elif 'undo-match' in request.POST:
             match = Matchup.objects.get(pk=request.POST['undo_match_pk'])
             match.delete()
